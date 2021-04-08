@@ -19,7 +19,12 @@ class MovieRepository(private val apiKey: String,
     }
 
     fun fetchMostPopular(value: MoviePageQuery): Flow<List<Movie>> = flow {
-        emit(movieListMapper.mapFromEntity(webService.popular(page = value.page, key = apiKey)))
+        try {
+            emit(movieListMapper.mapFromEntity(webService.popular(page = value.page, key = apiKey)))
+        }catch (ex: Throwable) {
+            ex.printStackTrace()
+            throw ex
+        }
     }
 
     fun getDetails(value: Movie): Flow<MovieDetail> = flow {

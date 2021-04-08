@@ -25,6 +25,9 @@ private val simpleDateFormat by lazy {
 }
 
 fun formatDate(value: String): String {
+    if (value.isBlank()) {
+        return "n/a"
+    }
     val date = simpleDateFormat.parse(value)
     return date?.let { SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(date) } ?: "n/a"
 }

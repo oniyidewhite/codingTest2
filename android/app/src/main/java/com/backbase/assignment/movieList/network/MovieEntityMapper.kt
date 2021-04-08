@@ -7,7 +7,7 @@ import javax.inject.Inject
 class MovieEntityMapper @Inject constructor() : EntityMapper<MovieEntity, List<Movie>> {
     override fun mapFromEntity(entity: MovieEntity): List<Movie> {
         return entity.movies.map {
-            Movie(id = it.id.toString(), rating = it.rating, image = it.image, title = it.title, releaseDate = it.releaseDate)
+            Movie(id = it.id.toString(), rating = it.rating, image = it.image, title = it.title, releaseDate = it.releaseDate ?: "")
         }
     }
 }
