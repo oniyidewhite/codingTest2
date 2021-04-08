@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CS Android Assignment</string>
+    <string name="label_title">MOVIEBOX</string>
+    <string name="label_playing_now">Playing now</string>
+    <string name="label_most_popular">Most Popular</string>
+    <string name="error_message" >An unexpected error occurred while retrieving resource</string>
+    <string name="label_retry">Retry</string>
+    <string name="label_overview">Overview</string>
 </resources>
