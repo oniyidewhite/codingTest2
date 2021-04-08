@@ -12,6 +12,7 @@ import com.backbase.assignment.ui.custom.RatingView
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
+// TODO(oblessing): We should remove this
 class MoviesAdapter(var items: JsonArray = JsonArray()) :
     RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
 

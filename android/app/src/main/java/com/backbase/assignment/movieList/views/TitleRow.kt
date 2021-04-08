@@ -3,7 +3,6 @@ package com.backbase.assignment.movieList.views
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
 import com.backbase.assignment.core.mavericks.viewBinding

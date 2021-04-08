@@ -9,7 +9,7 @@ class MovieEntityMapperTest {
         val mapper = MovieEntityMapper()
 
         val domain = Movie("1", 2.0, "test", "test-2", "test-3")
-        val entity = MovieEntity("0", listOf(MovieItem(1L,"test-2", "test-3", 2.0, "test")))
+        val entity = MovieEntity("0", listOf(MovieItem(1L, "test-2", "test-3", 2.0, "test")))
 
         assert(mapper.mapFromEntity(entity)[0] == domain) {
             "Conversion failed"

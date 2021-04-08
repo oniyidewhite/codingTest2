@@ -54,33 +54,33 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
     }
 
     override fun invalidate() = withState(viewModel) { state ->
-       binding.recyclerView.withModels {
+        binding.recyclerView.withModels {
 
-           state.movieDetail()?.let { data ->
-               posterTitleRow {
-                   id("poster-${data.id}")
+            state.movieDetail()?.let { data ->
+                posterTitleRow {
+                    id("poster-${data.id}")
 
-                   movie(movie)
-                   duration(data.duration)
-               }
+                    movie(movie)
+                    duration(data.duration)
+                }
 
-               overviewRow {
-                   id("overview-${data.id}")
-                   content(data.overview)
-               }
+                overviewRow {
+                    id("overview-${data.id}")
+                    content(data.overview)
+                }
 
-               val tags = data.genres.mapIndexed { k, v ->
-                   TagsRowModel_()
-                           .id("tag-${k}")
-                           .details(v)
-               }
+                val tags = data.genres.mapIndexed { k, v ->
+                    TagsRowModel_()
+                            .id("tag-${k}")
+                            .details(v)
+                }
 
-               carousel {
-                   id("carousel-tag-${data.id}")
-                   models(tags)
-               }
-           }
-       }
+                carousel {
+                    id("carousel-tag-${data.id}")
+                    models(tags)
+                }
+            }
+        }
         checkStatus(state)
     }
 

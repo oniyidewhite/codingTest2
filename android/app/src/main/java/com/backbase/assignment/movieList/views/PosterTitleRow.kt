@@ -12,7 +12,6 @@ import com.backbase.assignment.core.loadUrl
 import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.PosterTitleRowBinding
 import com.backbase.assignment.movieList.models.Movie
-import com.backbase.assignment.movieList.models.MovieDetail
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class PosterTitleRow @JvmOverloads constructor(
@@ -28,12 +27,9 @@ class PosterTitleRow @JvmOverloads constructor(
         binding.imageView.loadUrl(movie.originalImageAsUrl)
     }
 
+    @SuppressLint("SetTextI18n")
     @ModelProp
     fun setDuration(value: Long) {
         binding.durationText.text = "- ${getDurationAsString(value)}"
-    }
-
-    companion object {
-
     }
 }

@@ -19,8 +19,6 @@ class MovieItemRow @JvmOverloads constructor(
         defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
     private val binding: PopularRowBinding by viewBinding()
 
-
-
     @ModelProp
     fun setMovie(movie: Movie): Unit = with(binding) {
         imageView.loadUrl(movie.imageAsUrl)

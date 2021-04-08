@@ -3,7 +3,6 @@ package com.backbase.assignment.movieList.viewModel
 import com.airbnb.mvrx.*
 import com.backbase.assignment.core.di.support.AssistedViewModelFactory
 import com.backbase.assignment.core.di.support.hiltMavericksViewModelFactory
-import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.models.MoviePageQuery
 import com.backbase.assignment.movieList.repository.MovieRepository
 import com.backbase.assignment.movieList.viewModel.states.MovieListState
@@ -11,86 +10,59 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 
 class MovieListViewModel @AssistedInject constructor(
         @Assisted state: MovieListState,
         private val repository: MovieRepository) : MavericksViewModel<MovieListState>(state) {
-    private var popularMoviesNextPageNo = 1
-
     init {
         fetchAll()
     }
 
     private fun fetchNowPlaying() {
         repository.fetchNowPlaying().execute(IO) {
-            synchronized(this@MovieListViewModel) {
-                val list = it()
-                val status = if (list != null && mostPopular != null) {
-                    Success(Unit)
-                } else {
-                    loading
-                }
-                copy(nowPlaying = list, loading = status)
+            val list = it()
+            val status = if (list != null && mostPopular != null) {
+                Success(Unit)
+            } else {
+                loading
             }
+            copy(nowPlaying = list, loading = status)
         }
     }
 
     fun fetchAll() {
-        popularMoviesNextPageNo = 1
-        setState { copy(loading = Loading()) }
+        setState { copy(loading = Loading(), popularMoviesNextPageNo = 1) }
         fetchNowPlaying()
-        fetchMostPopular(popularMoviesNextPageNo)
+        fetchMostPopular()
     }
 
-    private fun fetchMostPopular(pageNo: Int) {
-        repository.fetchMostPopular(MoviePageQuery(pageNo)).execute(IO) {
-            synchronized(this@MovieListViewModel) {
-                if (mostPopular == null) {
-                    val list = it()
-                    val status = if (list != null && nowPlaying != null) {
-                        Success(Unit)
-                    } else {
-                        loading
-                    }
-
-                    copy(mostPopular = list, loading = status)
+    private fun fetchMostPopular(): Unit = withState {
+        repository.fetchMostPopular(MoviePageQuery(it.popularMoviesNextPageNo)).execute(IO) {
+            if (mostPopular == null) {
+                val list = it()
+                val status = if (list != null && nowPlaying != null) {
+                    Success(Unit)
                 } else {
-                    val list = it()
-                    val (content, status) = if (list != null) {
-                        Pair(mostPopular.toMutableList().apply { addAll(list) }, Success(Unit) as Async<Unit>)
-                    } else {
-                        Pair(mostPopular, Loading())
-                    }
-
-                    copy(mostPopular = content, loading = status)
+                    loading
                 }
+
+                copy(mostPopular = list, loading = status)
+            } else {
+                val list = it()
+                val (content, status) = if (list != null) {
+                    Pair(mostPopular.toMutableList().apply { addAll(list) }, Success(Unit) as Async<Unit>)
+                } else {
+                    Pair(mostPopular, Loading())
+                }
+
+                copy(mostPopular = content, loading = status)
             }
         }
-
-//            val list = it()
-//            val status = if (!nowPlaying.isNullOrEmpty() && !list.isNullOrEmpty()) {
-//                Success(Unit)
-//            } else {
-//                loading
-//            }
-//
-//            val content = if (mostPopular != null && list != null) {
-//                mostPopular.toMutableList().apply {
-//                    addAll(list)
-//                }
-//            } else {
-//                list ?: mostPopular
-//            }
-//
-//            copy(mostPopular = content, loading = status)
-//        }
     }
 
     fun fetchPopularNextPage() {
-        setState { copy(loading = Loading()) }
-        popularMoviesNextPageNo += 1
-        fetchMostPopular(popularMoviesNextPageNo)
+        setState { copy(loading = Loading(), popularMoviesNextPageNo = popularMoviesNextPageNo + 1) }
+        fetchMostPopular()
     }
 
     @AssistedFactory

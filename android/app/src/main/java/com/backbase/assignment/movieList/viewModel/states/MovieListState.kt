@@ -8,4 +8,5 @@ import com.backbase.assignment.movieList.models.Movie
 data class MovieListState(
         val nowPlaying: List<Movie>? = null,
         val mostPopular: List<Movie>? = null,
-        val loading: Async<Unit> = Uninitialized) : MavericksState //Async<List<Movie>> = Uninitialized
+        val popularMoviesNextPageNo: Int = 1,
+        val loading: Async<Unit> = Uninitialized) : MavericksState
