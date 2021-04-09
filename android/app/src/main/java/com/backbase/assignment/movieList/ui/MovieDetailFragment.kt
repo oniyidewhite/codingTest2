@@ -12,6 +12,7 @@ import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieDetailBinding
 import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.models.MovieDetail
+import com.backbase.assignment.movieList.ui.states.MovieDetailState
 import com.backbase.assignment.movieList.viewModel.MovieDetailViewModel
 import com.backbase.assignment.movieList.ui.states.MovieDetailState.*
 import com.backbase.assignment.movieList.views.TagsRowModel_
@@ -31,8 +32,20 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.backImage.setOnClickListener { viewModel.closeDetail() }
+        binding.backImage.setOnClickListener { viewModel.close() }
         viewModel.setMovieId(movie.id)
+
+        viewModel.onEach(MovieDetailState::effect) {
+            when (it) {
+                Effect.Close -> closeDetail()
+                is Effect.ShowError -> showSnackBarMessage()
+                else -> Unit
+            }
+        }
+
+        viewModel.onEach(MovieDetailState::showProgress) {
+            binding.progress.isVisible = it
+        }
     }
 
     private fun retry() {
@@ -74,22 +87,11 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         }
     }
 
-    private fun stateEffect(effect: Effect?) {
-        when (effect) {
-            Effect.Close -> closeDetail()
-            is Effect.ShowError -> showSnackBarMessage()
-            else -> Unit
-        }
-    }
-
     override fun invalidate() = withState(viewModel) { state ->
         when (val e = state.event) {
             is Event.LoadedMovieDetail -> updateUi(e.movieDetail)
             else -> Unit
         }
-
-        stateEffect(state.effect)
-        binding.progress.isVisible = state.showProgress
     }
 
     companion object {

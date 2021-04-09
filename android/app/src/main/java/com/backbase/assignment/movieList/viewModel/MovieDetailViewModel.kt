@@ -47,7 +47,7 @@ class MovieDetailViewModel @AssistedInject constructor(
         }
     }
 
-    fun closeDetail() {
+    fun close() {
         setState { reduce(Event.ClosedTapped) }
     }
 

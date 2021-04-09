@@ -1,5 +1,7 @@
 package com.backbase.assignment.movieList.ui
 
+import android.os.Bundle
+import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -9,6 +11,7 @@ import com.backbase.assignment.R
 import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieListBinding
 import com.backbase.assignment.movieList.models.Movie
+import com.backbase.assignment.movieList.ui.states.MovieListState
 import com.backbase.assignment.movieList.ui.states.MovieListState.*
 import com.backbase.assignment.movieList.viewModel.MovieListViewModel
 import com.backbase.assignment.movieList.views.PosterRowModel_
@@ -23,25 +26,31 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
 
     private val viewModel: MovieListViewModel by fragmentViewModel()
 
-    private fun showMovieDetails(movie: Movie) {
-        findNavController().navigate(R.id.action_movieListFragment_to_movieDetailFragment, MovieDetailFragment.arg(movie))
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.onEach(MovieListState::effect) {
+            when (it) {
+                is Effect.MovieDetail -> showMovieDetails(it.movie)
+                is Effect.ShowError -> showSnackBarMessage()
+                else -> Unit
+            }
+        }
+
+        viewModel.onEach(MovieListState::showProgress) {
+            binding.progress.isVisible = it
+        }
     }
 
-    override fun invalidate(): Unit = withState(viewModel) { s ->
+    private fun showMovieDetails(movie: Movie) {
+        findNavController().navigate(R.id.action_movieListFragment_to_movieDetailFragment, MovieDetailFragment.arg(movie))
+        viewModel.handledEffect()
+    }
+
+    override fun invalidate() = withState(viewModel) { s ->
         when (s.event) {
             is Event.LoadedAllMovies,
             is Event.LoadedNextMostPopular -> updateUi(s.nowPlaying, s.mostPopular)
-            else -> Unit
-        }
-
-        stateEffect(s.effect)
-        binding.progress.isVisible = s.showProgress
-    }
-
-    private fun stateEffect(effect: Effect?) {
-        when (effect) {
-            is Effect.MovieDetail -> showMovieDetails(effect.movie)
-            is Effect.ShowError -> showSnackBarMessage()
             else -> Unit
         }
     }
@@ -52,6 +61,8 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
                 fetchAllMovieTypes()
             }
         }.show()
+
+        viewModel.handledEffect()
     }
 
     private fun fetchAllMovieTypes() {

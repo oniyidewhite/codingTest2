@@ -20,6 +20,8 @@ data class MovieListState(
             Event.CheckAllFailed -> copy(event = e, effect = Effect.ShowError, inProgress = false)
             Event.LoadedAllMovies -> copy(event = e, effect = null, inProgress = false)
 
+            Event.HandledEffect -> copy(event = e, effect = null)
+
             Event.NextMostPopularFailed -> copy(event = e, effect = null)
             Event.LoadNextMostPopularRequestSent -> copy(event = e, effect = Effect.LoadNextMostPopular, inProgress = false)
             is Event.LoadedNextMostPopular -> copy(event = e, inProgress = false, popularMoviesPageNo = e.pageNo + 1, effect = null, mostPopular = mostPopular?.toMutableList()?.apply { addAll(e.movies) }
@@ -51,6 +53,8 @@ data class MovieListState(
         data class LoadedNowPlaying(val movies: List<Movie>) : Event()
         object LoadedAllMovies : Event()
         object CheckAllFailed : Event()
+
+        object HandledEffect : Event()
 
         object LoadNextMostPopularRequestSent : Event()
         data class LoadedNextMostPopular(val pageNo: Int, val movies: List<Movie>) : Event()

@@ -81,6 +81,10 @@ class MovieListViewModel @AssistedInject constructor(
         }
     }
 
+    fun handledEffect() {
+        setState { reduce(Event.HandledEffect) }
+    }
+
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<MovieListViewModel, MovieListState> {
         override fun create(state: MovieListState): MovieListViewModel
