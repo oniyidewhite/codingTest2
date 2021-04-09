@@ -5,7 +5,7 @@ import com.backbase.assignment.movieList.models.MovieDetail
 
 data class MovieDetailState(
         val movieId: String = "",
-        private val inProgress: Boolean = true,
+        private val inProgress: Boolean = false,
         val movieDetail: MovieDetail? = null,
         val event: Event? = null,
         val effect: Effect? = null,
@@ -16,7 +16,7 @@ data class MovieDetailState(
         return when (e) {
             is Event.LoadRequestFailed -> copy(event = e, inProgress = false, effect = Effect.ShowError)
             is Event.LoadedMovieDetail -> copy(event = e, movieDetail = e.movieDetail, effect = null, inProgress = false)
-            is Event.MovieIdEntered -> copy(event = e, movieId = e.id, effect = Effect.CheckMovieDetail)
+            is Event.MovieIdEntered -> copy(event = e, movieId = e.id, effect = Effect.CheckMovieDetail, inProgress = false)
             is Event.LoadRequestSent -> copy(event = e, inProgress = true, effect = null)
             is Event.RetryTapped -> copy(event = e, effect = Effect.CheckMovieDetail, inProgress = false)
             is Event.ClosedTapped -> copy(event = e, effect = Effect.Close)

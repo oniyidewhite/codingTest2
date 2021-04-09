@@ -21,7 +21,7 @@ class MovieListViewModel @AssistedInject constructor(
     }
 
     fun fetchAllMovieTypes() {
-        setState { reduce(Event.CheckAllMoviesRequestSent) }
+        setState { reduce(Event.FindAllMoviesRequested) }
         checkState()
     }
 

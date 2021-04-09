@@ -14,15 +14,15 @@ data class MovieListState(
 
     fun reduce(e: Event): MovieListState {
         return when (e) {
-            Event.CheckAllMoviesRequestSent -> copy(event = e, inProgress = true, effect = Effect.CheckAllMovies, popularMoviesPageNo = 0)
+            Event.FindAllMoviesRequested -> copy(event = e, inProgress = true, effect = Effect.CheckAllMovies, popularMoviesPageNo = 0)
             is Event.LoadedMostPopular -> mergeLoaded(e, e.movies)
             is Event.LoadedNowPlaying -> mergeLoaded(e, e.movies)
             Event.CheckAllFailed -> copy(event = e, effect = Effect.ShowError, inProgress = false)
             Event.LoadedAllMovies -> copy(event = e, effect = null, inProgress = false)
 
             Event.NextMostPopularFailed -> copy(event = e, effect = null)
-            Event.LoadNextMostPopularRequestSent -> copy(event = e, effect = Effect.LoadNextMostPopular)
-            is Event.LoadedNextMostPopular -> copy(event = e, popularMoviesPageNo = e.pageNo + 1, effect = null, mostPopular = mostPopular?.toMutableList()?.apply { addAll(e.movies) }
+            Event.LoadNextMostPopularRequestSent -> copy(event = e, effect = Effect.LoadNextMostPopular, inProgress = false)
+            is Event.LoadedNextMostPopular -> copy(event = e, inProgress = false, popularMoviesPageNo = e.pageNo + 1, effect = null, mostPopular = mostPopular?.toMutableList()?.apply { addAll(e.movies) }
                     ?: error("should not happen"))
 
             is Event.MovieDetailTapped -> copy(event = e, effect = Effect.MovieDetail(e.movie))
@@ -46,7 +46,7 @@ data class MovieListState(
     }
 
     sealed class Event {
-        object CheckAllMoviesRequestSent : Event()
+        object FindAllMoviesRequested : Event()
         data class LoadedMostPopular(val movies: List<Movie>) : Event()
         data class LoadedNowPlaying(val movies: List<Movie>) : Event()
         object LoadedAllMovies : Event()
@@ -63,6 +63,6 @@ data class MovieListState(
         object CheckAllMovies : Effect()
         object LoadNextMostPopular : Effect()
         data class MovieDetail(val movie: Movie) : Effect()
-        object ShowError: Effect()
+        object ShowError : Effect()
     }
 }
