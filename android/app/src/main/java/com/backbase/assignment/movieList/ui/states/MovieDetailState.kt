@@ -14,11 +14,11 @@ data class MovieDetailState(
 
     fun reduce(e: Event): MovieDetailState {
         return when (e) {
-            Event.LoadRequestFailed -> copy(event = Event.LoadRequestFailed, inProgress = false)
+            is Event.LoadRequestFailed -> copy(event = e, inProgress = false, effect = Effect.ShowError)
             is Event.LoadedMovieDetail -> copy(event = e, movieDetail = e.movieDetail, effect = null, inProgress = false)
             is Event.MovieIdEntered -> copy(event = e, movieId = e.id, effect = Effect.CheckMovieDetail)
-            is Event.LoadRequestSent -> copy(event = e, inProgress = true)
-            is Event.RetryTapped -> copy(event = e)
+            is Event.LoadRequestSent -> copy(event = e, inProgress = true, effect = null)
+            is Event.RetryTapped -> copy(event = e, effect = Effect.CheckMovieDetail, inProgress = false)
             is Event.ClosedTapped -> copy(event = e, effect = Effect.Close)
         }
     }
@@ -36,5 +36,6 @@ data class MovieDetailState(
         // Out: UI Events
         object CheckMovieDetail : Effect()
         object Close : Effect()
+        object ShowError : Effect()
     }
 }

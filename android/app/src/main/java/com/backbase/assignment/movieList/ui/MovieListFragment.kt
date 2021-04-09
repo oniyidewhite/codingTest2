@@ -9,7 +9,6 @@ import com.backbase.assignment.R
 import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieListBinding
 import com.backbase.assignment.movieList.models.Movie
-import com.backbase.assignment.movieList.ui.states.MovieListState
 import com.backbase.assignment.movieList.ui.states.MovieListState.*
 import com.backbase.assignment.movieList.viewModel.MovieListViewModel
 import com.backbase.assignment.movieList.views.PosterRowModel_
@@ -28,13 +27,6 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
         findNavController().navigate(R.id.action_movieListFragment_to_movieDetailFragment, MovieDetailFragment.arg(movie))
     }
 
-    private fun checkStatus(state: MovieListState) {
-        binding.progress.isVisible = state.showProgress
-        if (state.event is Event.CheckAllFailed) {
-            showSnackBarMessage()
-        }
-    }
-
     override fun invalidate(): Unit = withState(viewModel) { s ->
         when (s.event) {
             is Event.LoadedAllMovies,
@@ -43,12 +35,13 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
         }
 
         stateEffect(s.effect)
-        checkStatus(s)
+        binding.progress.isVisible = s.showProgress
     }
 
     private fun stateEffect(effect: Effect?) {
         when (effect) {
             is Effect.MovieDetail -> showMovieDetails(effect.movie)
+            is Effect.ShowError -> showSnackBarMessage()
             else -> Unit
         }
     }

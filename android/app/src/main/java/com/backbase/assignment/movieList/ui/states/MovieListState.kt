@@ -15,9 +15,9 @@ data class MovieListState(
     fun reduce(e: Event): MovieListState {
         return when (e) {
             Event.CheckAllMoviesRequestSent -> copy(event = e, inProgress = true, effect = Effect.CheckAllMovies, popularMoviesPageNo = 0)
-            is Event.LoadedMostPopular -> mergeLoaded(e, e.movies) //copy(event = , mostPopular = e.movies, effect = null)
-            is Event.LoadedNowPlaying -> mergeLoaded(e, e.movies) //copy(event = , nowPlaying = e.movies, effect = null)
-            Event.CheckAllFailed -> copy(event = e, effect = null, inProgress = false)
+            is Event.LoadedMostPopular -> mergeLoaded(e, e.movies)
+            is Event.LoadedNowPlaying -> mergeLoaded(e, e.movies)
+            Event.CheckAllFailed -> copy(event = e, effect = Effect.ShowError, inProgress = false)
             Event.LoadedAllMovies -> copy(event = e, effect = null, inProgress = false)
 
             Event.NextMostPopularFailed -> copy(event = e, effect = null)
@@ -63,5 +63,6 @@ data class MovieListState(
         object CheckAllMovies : Effect()
         object LoadNextMostPopular : Effect()
         data class MovieDetail(val movie: Movie) : Effect()
+        object ShowError: Effect()
     }
 }

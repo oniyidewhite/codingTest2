@@ -12,7 +12,6 @@ import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieDetailBinding
 import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.models.MovieDetail
-import com.backbase.assignment.movieList.ui.states.MovieDetailState
 import com.backbase.assignment.movieList.viewModel.MovieDetailViewModel
 import com.backbase.assignment.movieList.ui.states.MovieDetailState.*
 import com.backbase.assignment.movieList.views.TagsRowModel_
@@ -34,13 +33,6 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         super.onViewCreated(view, savedInstanceState)
         binding.backImage.setOnClickListener { viewModel.closeDetail() }
         viewModel.setMovieId(movie.id)
-    }
-
-    private fun checkStatus(state: MovieDetailState) {
-        binding.progress.isVisible = state.showProgress
-        if (state.event is Event.LoadRequestFailed) {
-            showSnackBarMessage()
-        }
     }
 
     private fun retry() {
@@ -85,6 +77,7 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
     private fun stateEffect(effect: Effect?) {
         when (effect) {
             Effect.Close -> closeDetail()
+            is Effect.ShowError -> showSnackBarMessage()
             else -> Unit
         }
     }
@@ -94,8 +87,9 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
             is Event.LoadedMovieDetail -> updateUi(e.movieDetail)
             else -> Unit
         }
+
         stateEffect(state.effect)
-        checkStatus(state)
+        binding.progress.isVisible = state.showProgress
     }
 
     companion object {
