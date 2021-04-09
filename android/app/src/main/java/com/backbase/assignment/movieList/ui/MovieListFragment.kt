@@ -1,7 +1,5 @@
 package com.backbase.assignment.movieList.ui
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -12,6 +10,7 @@ import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieListBinding
 import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.ui.states.MovieListState
+import com.backbase.assignment.movieList.ui.states.MovieListState.*
 import com.backbase.assignment.movieList.viewModel.MovieListViewModel
 import com.backbase.assignment.movieList.views.PosterRowModel_
 import com.backbase.assignment.movieList.views.dividerRow
@@ -25,37 +24,40 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
 
     private val viewModel: MovieListViewModel by fragmentViewModel()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.onAsync(MovieListState::loading, onSuccess = {
-            val state = viewModel.awaitState()
-            updateUi(state.nowPlaying, state.mostPopular)
-        })
-    }
-
     private fun showMovieDetails(movie: Movie) {
         findNavController().navigate(R.id.action_movieListFragment_to_movieDetailFragment, MovieDetailFragment.arg(movie))
     }
 
     private fun checkStatus(state: MovieListState) {
-        binding.progress.isVisible = state.loading is Loading && (state.mostPopular == null || state.nowPlaying == null)
-        if (state.loading is Fail) {
+        binding.progress.isVisible = state.showProgress
+        if (state.event is Event.CheckAllFailed) {
             showSnackBarMessage()
         }
     }
 
-    override fun invalidate(): Unit = withState(viewModel) { checkStatus(it) }
+    override fun invalidate(): Unit = withState(viewModel) { s ->
+        when (s.event) {
+            is Event.LoadedAllMovies,
+            is Event.LoadedNextMostPopular -> updateUi(s.nowPlaying, s.mostPopular)
+            else -> Unit
+        }
+        checkStatus(s)
+    }
 
     private fun showSnackBarMessage() {
         Snackbar.make(binding.root, getString(R.string.error_message), Snackbar.LENGTH_INDEFINITE).apply {
             setAction(R.string.label_retry) {
-                viewModel.fetchAll()
+                fetchAllMovieTypes()
             }
         }.show()
     }
 
-    private fun loadNextPage() {
-        viewModel.fetchPopularNextPage()
+    private fun fetchAllMovieTypes() {
+        viewModel.fetchAllMovieTypes()
+    }
+
+    private fun loadMoreMostPopular() {
+        viewModel.fetchNextPopularList()
     }
 
     private fun updateUi(nowPlaying: List<Movie>?, mostPopular: List<Movie>?) {
@@ -98,7 +100,7 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
                 loadMoreRow {
                     id("progress")
                     onBind { _, _, _ ->
-                        loadNextPage()
+                        loadMoreMostPopular()
                     }
                 }
             }
