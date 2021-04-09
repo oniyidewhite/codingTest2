@@ -3,9 +3,8 @@ package com.backbase.assignment.movieList.viewModel
 import com.airbnb.mvrx.*
 import com.backbase.assignment.core.di.support.AssistedViewModelFactory
 import com.backbase.assignment.core.di.support.hiltMavericksViewModelFactory
-import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.repository.MovieRepository
-import com.backbase.assignment.movieList.ui.states.Event
+import com.backbase.assignment.movieList.ui.states.MovieDetailState.*
 import com.backbase.assignment.movieList.ui.states.MovieDetailState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -16,15 +15,20 @@ class MovieDetailViewModel @AssistedInject constructor(
         @Assisted state: MovieDetailState,
         private val repository: MovieRepository) : MavericksViewModel<MovieDetailState>(state) {
 
-    fun getDetails(movie: Movie) {
-        setState { reduce(Event.MovieIdEntered(movie.id)) }
+    fun retry() {
+        setState { reduce(Event.RetryTapped) }
+        checkState()
+    }
+
+    fun setMovieId(id: String) {
+        setState { reduce(Event.MovieIdEntered(id)) }
         checkState()
     }
 
     private fun checkState() = withState { s ->
-        when (val e = s.event) {
-            is Event.MovieIdEntered -> {
-                repository.getDetails(e.id).execute(IO) { async ->
+        when (val e = s.effect) {
+            is Effect.CheckMovieDetail -> {
+                repository.getDetails(s.movieId).execute(IO) { async ->
                     when (async) {
                         is Loading -> {
                             reduce(Event.LoadRequestSent)

@@ -3,20 +3,8 @@ package com.backbase.assignment.movieList.ui.states
 import com.airbnb.mvrx.MavericksState
 import com.backbase.assignment.movieList.models.MovieDetail
 
-sealed class Event {
-    data class MovieIdEntered(val id: String) : Event()
-    data class LoadedMovieDetail(val movieDetail: MovieDetail) : Event()
-    object LoadRequestFailed : Event()
-    object LoadRequestSent : Event()
-}
-
-sealed class Effect {
-    // Out: UI Events
-    object CheckMovieDetail : Effect()
-}
-
 data class MovieDetailState(
-        private val movieId: String = "",
+        val movieId: String = "",
         private val inProgress: Boolean = true,
         val movieDetail: MovieDetail? = null,
         val event: Event? = null,
@@ -30,6 +18,20 @@ data class MovieDetailState(
             is Event.LoadedMovieDetail -> copy(event = e, movieDetail = e.movieDetail, effect = null, inProgress = false)
             is Event.MovieIdEntered -> copy(event = e, movieId = e.id, effect = Effect.CheckMovieDetail)
             is Event.LoadRequestSent -> copy(event = e, inProgress = true)
+            is Event.RetryTapped -> copy(event = e)
         }
+    }
+
+    sealed class Event {
+        data class MovieIdEntered(val id: String) : Event()
+        data class LoadedMovieDetail(val movieDetail: MovieDetail) : Event()
+        object RetryTapped : Event()
+        object LoadRequestFailed : Event()
+        object LoadRequestSent : Event()
+    }
+
+    sealed class Effect {
+        // Out: UI Events
+        object CheckMovieDetail : Effect()
     }
 }

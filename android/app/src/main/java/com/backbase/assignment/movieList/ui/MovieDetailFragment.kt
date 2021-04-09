@@ -14,7 +14,7 @@ import com.backbase.assignment.movieList.models.Movie
 import com.backbase.assignment.movieList.models.MovieDetail
 import com.backbase.assignment.movieList.ui.states.MovieDetailState
 import com.backbase.assignment.movieList.viewModel.MovieDetailViewModel
-import com.backbase.assignment.movieList.ui.states.Event
+import com.backbase.assignment.movieList.ui.states.MovieDetailState.*
 import com.backbase.assignment.movieList.views.TagsRowModel_
 import com.backbase.assignment.movieList.views.overviewRow
 import com.backbase.assignment.movieList.views.posterTitleRow
@@ -32,8 +32,8 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadDetails()
         binding.backImage.setOnClickListener { closeDetail() }
+        viewModel.setMovieId(movie.id)
     }
 
     private fun checkStatus(state: MovieDetailState) {
@@ -43,14 +43,14 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         }
     }
 
-    private fun loadDetails() {
-        viewModel.getDetails(movie)
+    private fun retry() {
+        viewModel.retry()
     }
 
     private fun showSnackBarMessage() {
         Snackbar.make(binding.root, getString(R.string.error_message), Snackbar.LENGTH_INDEFINITE).apply {
             setAction(R.string.label_retry) {
-                loadDetails()
+                retry()
             }
         }.show()
     }
