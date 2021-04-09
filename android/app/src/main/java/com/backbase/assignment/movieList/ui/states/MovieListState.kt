@@ -1,4 +1,4 @@
-package com.backbase.assignment.movieList.viewModel.states
+package com.backbase.assignment.movieList.ui.states
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState

@@ -5,7 +5,7 @@ import com.backbase.assignment.core.di.support.AssistedViewModelFactory
 import com.backbase.assignment.core.di.support.hiltMavericksViewModelFactory
 import com.backbase.assignment.movieList.models.MoviePageQuery
 import com.backbase.assignment.movieList.repository.MovieRepository
-import com.backbase.assignment.movieList.viewModel.states.MovieListState
+import com.backbase.assignment.movieList.ui.states.MovieListState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

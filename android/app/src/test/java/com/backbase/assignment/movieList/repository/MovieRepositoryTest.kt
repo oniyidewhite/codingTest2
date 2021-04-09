@@ -46,7 +46,7 @@ class MovieRepositoryTest {
 
         val repository = MovieRepository(apiKey, movieEntityMapper, movieDetailEntityMapper, webService)
 
-        repository.getDetails(movie).collect {
+        repository.getDetails(movie.id).collect {
             assert(it.id == entity.id) {
                 "Invalid response"
             }

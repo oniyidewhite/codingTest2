@@ -27,7 +27,7 @@ class MovieRepository(private val apiKey: String,
         }
     }
 
-    fun getDetails(value: Movie): Flow<MovieDetail> = flow {
-        emit(movieDetailMapper.mapFromEntity(webService.details(id = value.id, key = apiKey)))
+    fun getDetails(id: String): Flow<MovieDetail> = flow {
+        emit(movieDetailMapper.mapFromEntity(webService.details(id = id, key = apiKey)))
     }
 }

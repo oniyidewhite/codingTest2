@@ -1,4 +1,4 @@
-package com.backbase.assignment.movieList
+package com.backbase.assignment.movieList.ui
 
 import android.os.Bundle
 import android.view.View
@@ -11,7 +11,7 @@ import com.backbase.assignment.R
 import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieListBinding
 import com.backbase.assignment.movieList.models.Movie
-import com.backbase.assignment.movieList.viewModel.states.MovieListState
+import com.backbase.assignment.movieList.ui.states.MovieListState
 import com.backbase.assignment.movieList.viewModel.MovieListViewModel
 import com.backbase.assignment.movieList.views.PosterRowModel_
 import com.backbase.assignment.movieList.views.dividerRow

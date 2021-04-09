@@ -1,4 +1,4 @@
-package com.backbase.assignment.movieList
+package com.backbase.assignment.movieList.ui
 
 import android.os.Bundle
 import android.view.View
@@ -11,8 +11,10 @@ import com.backbase.assignment.R
 import com.backbase.assignment.core.mavericks.viewBinding
 import com.backbase.assignment.databinding.FragmentMovieDetailBinding
 import com.backbase.assignment.movieList.models.Movie
-import com.backbase.assignment.movieList.viewModel.states.MovieDetailState
+import com.backbase.assignment.movieList.models.MovieDetail
+import com.backbase.assignment.movieList.ui.states.MovieDetailState
 import com.backbase.assignment.movieList.viewModel.MovieDetailViewModel
+import com.backbase.assignment.movieList.ui.states.Event
 import com.backbase.assignment.movieList.views.TagsRowModel_
 import com.backbase.assignment.movieList.views.overviewRow
 import com.backbase.assignment.movieList.views.posterTitleRow
@@ -35,8 +37,8 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
     }
 
     private fun checkStatus(state: MovieDetailState) {
-        binding.progress.isVisible = state.movieDetail is Loading
-        if (state.movieDetail is Fail) {
+        binding.progress.isVisible = state.showProgress
+        if (state.event is Event.LoadRequestFailed) {
             showSnackBarMessage()
         }
     }
@@ -53,34 +55,39 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         }.show()
     }
 
-    override fun invalidate() = withState(viewModel) { state ->
+    private fun updateUi(data: MovieDetail) {
         binding.recyclerView.withModels {
+            posterTitleRow {
+                id("poster-${data.id}")
 
-            state.movieDetail()?.let { data ->
-                posterTitleRow {
-                    id("poster-${data.id}")
+                movie(movie)
+                duration(data.duration)
+            }
 
-                    movie(movie)
-                    duration(data.duration)
-                }
+            overviewRow {
+                id("overview-${data.id}")
+                content(data.overview)
+            }
 
-                overviewRow {
-                    id("overview-${data.id}")
-                    content(data.overview)
-                }
+            val tags = data.genres.mapIndexed { k, v ->
+                TagsRowModel_()
+                        .id("tag-${k}")
+                        .details(v)
+            }
 
-                val tags = data.genres.mapIndexed { k, v ->
-                    TagsRowModel_()
-                            .id("tag-${k}")
-                            .details(v)
-                }
-
-                carousel {
-                    id("carousel-tag-${data.id}")
-                    models(tags)
-                }
+            carousel {
+                id("carousel-tag-${data.id}")
+                models(tags)
             }
         }
+    }
+
+    override fun invalidate() = withState(viewModel) { state ->
+        when (val e = state.event) {
+            is Event.LoadedMovieDetail -> updateUi(e.movieDetail)
+            else -> Unit
+        }
+
         checkStatus(state)
     }
 
