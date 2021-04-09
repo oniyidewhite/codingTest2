@@ -30,6 +30,10 @@ class MovieListViewModel @AssistedInject constructor(
         checkState()
     }
 
+    fun selectMovie(movie: Movie) {
+        setState { reduce(Event.MovieDetailTapped(movie)) }
+    }
+
     private fun checkState() = withState { s ->
         when (s.effect) {
             Effect.CheckAllMovies -> {

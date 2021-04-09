@@ -26,7 +26,7 @@ class MovieDetailViewModel @AssistedInject constructor(
     }
 
     private fun checkState() = withState { s ->
-        when (val e = s.effect) {
+        when (s.effect) {
             is Effect.CheckMovieDetail -> {
                 repository.getDetails(s.movieId).execute(IO) { async ->
                     when (async) {
@@ -43,7 +43,12 @@ class MovieDetailViewModel @AssistedInject constructor(
                     }
                 }
             }
+            else -> Unit
         }
+    }
+
+    fun closeDetail() {
+        setState { reduce(Event.ClosedTapped) }
     }
 
     @AssistedFactory

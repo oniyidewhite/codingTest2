@@ -32,7 +32,7 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.backImage.setOnClickListener { closeDetail() }
+        binding.backImage.setOnClickListener { viewModel.closeDetail() }
         viewModel.setMovieId(movie.id)
     }
 
@@ -82,12 +82,19 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         }
     }
 
+    private fun stateEffect(effect: Effect?) {
+        when (effect) {
+            Effect.Close -> closeDetail()
+            else -> Unit
+        }
+    }
+
     override fun invalidate() = withState(viewModel) { state ->
         when (val e = state.event) {
             is Event.LoadedMovieDetail -> updateUi(e.movieDetail)
             else -> Unit
         }
-
+        stateEffect(state.effect)
         checkStatus(state)
     }
 

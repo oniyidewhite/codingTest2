@@ -24,6 +24,8 @@ data class MovieListState(
             Event.LoadNextMostPopularRequestSent -> copy(event = e, effect = Effect.LoadNextMostPopular)
             is Event.LoadedNextMostPopular -> copy(event = e, popularMoviesPageNo = e.pageNo + 1, effect = null, mostPopular = mostPopular?.toMutableList()?.apply { addAll(e.movies) }
                     ?: error("should not happen"))
+
+            is Event.MovieDetailTapped -> copy(event = e, effect = Effect.MovieDetail(e.movie))
         }
     }
 
@@ -53,10 +55,13 @@ data class MovieListState(
         object LoadNextMostPopularRequestSent : Event()
         data class LoadedNextMostPopular(val pageNo: Int, val movies: List<Movie>) : Event()
         object NextMostPopularFailed : Event()
+
+        data class MovieDetailTapped(val movie: Movie) : Event()
     }
 
     sealed class Effect {
         object CheckAllMovies : Effect()
         object LoadNextMostPopular : Effect()
+        data class MovieDetail(val movie: Movie) : Effect()
     }
 }

@@ -19,6 +19,7 @@ data class MovieDetailState(
             is Event.MovieIdEntered -> copy(event = e, movieId = e.id, effect = Effect.CheckMovieDetail)
             is Event.LoadRequestSent -> copy(event = e, inProgress = true)
             is Event.RetryTapped -> copy(event = e)
+            is Event.ClosedTapped -> copy(event = e, effect = Effect.Close)
         }
     }
 
@@ -28,10 +29,12 @@ data class MovieDetailState(
         object RetryTapped : Event()
         object LoadRequestFailed : Event()
         object LoadRequestSent : Event()
+        object ClosedTapped : Event()
     }
 
     sealed class Effect {
         // Out: UI Events
         object CheckMovieDetail : Effect()
+        object Close : Effect()
     }
 }

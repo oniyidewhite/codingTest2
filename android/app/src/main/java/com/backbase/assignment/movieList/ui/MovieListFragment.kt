@@ -41,7 +41,16 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
             is Event.LoadedNextMostPopular -> updateUi(s.nowPlaying, s.mostPopular)
             else -> Unit
         }
+
+        stateEffect(s.effect)
         checkStatus(s)
+    }
+
+    private fun stateEffect(effect: Effect?) {
+        when (effect) {
+            is Effect.MovieDetail -> showMovieDetails(effect.movie)
+            else -> Unit
+        }
     }
 
     private fun showSnackBarMessage() {
@@ -54,6 +63,10 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
 
     private fun fetchAllMovieTypes() {
         viewModel.fetchAllMovieTypes()
+    }
+
+    private fun selectMovie(movie: Movie) {
+        viewModel.selectMovie(movie)
     }
 
     private fun loadMoreMostPopular() {
@@ -71,7 +84,7 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
                 PosterRowModel_()
                         .id("now-playing-${it.id}")
                         .movie(it)
-                        .clickListener { _ -> showMovieDetails(it) }
+                        .clickListener { _ -> selectMovie(it) }
             }
 
             carousel {
@@ -90,7 +103,7 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
                     movieItemRow {
                         id(it.id)
                         movie(it)
-                        clickListener { _ -> showMovieDetails(it) }
+                        clickListener { _ -> selectMovie(it) }
                     }
                     dividerRow {
                         id("divider-${it.id}")
