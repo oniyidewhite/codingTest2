@@ -14,37 +14,36 @@ import kotlinx.coroutines.Dispatchers.IO
 class MovieDetailViewModel @AssistedInject constructor(
         @Assisted state: MovieDetailState,
         private val repository: MovieRepository) : MavericksViewModel<MovieDetailState>(state) {
+    init {
+        onEach {
+            when (it.effect) {
+                is Effect.CheckMovieDetail -> {
+                    repository.getDetails(it.movieId).execute(IO) { async ->
+                        when (async) {
+                            is Loading -> {
+                                reduce(Event.LoadRequestSent)
+                            }
+                            is Fail -> {
+                                reduce(Event.LoadRequestFailed)
+                            }
+                            is Success -> {
+                                reduce(Event.LoadedMovieDetail(async()))
+                            }
+                            else -> this
+                        }
+                    }
+                }
+                else -> Unit
+            }
+        }
+    }
 
     fun retry() {
         setState { reduce(Event.RetryTapped) }
-        checkState()
     }
 
     fun setMovieId(id: String) {
         setState { reduce(Event.MovieIdEntered(id)) }
-        checkState()
-    }
-
-    private fun checkState() = withState { s ->
-        when (s.effect) {
-            is Effect.CheckMovieDetail -> {
-                repository.getDetails(s.movieId).execute(IO) { async ->
-                    when (async) {
-                        is Loading -> {
-                            reduce(Event.LoadRequestSent)
-                        }
-                        is Fail -> {
-                            reduce(Event.LoadRequestFailed)
-                        }
-                        is Success -> {
-                            reduce(Event.LoadedMovieDetail(async()))
-                        }
-                        else -> this
-                    }
-                }
-            }
-            else -> Unit
-        }
     }
 
     fun close() {

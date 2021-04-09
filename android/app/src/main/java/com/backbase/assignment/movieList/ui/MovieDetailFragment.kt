@@ -35,16 +35,14 @@ class MovieDetailFragment : Fragment(R.layout.fragment_movie_detail), MavericksV
         binding.backImage.setOnClickListener { viewModel.close() }
         viewModel.setMovieId(movie.id)
 
-        viewModel.onEach(MovieDetailState::effect) {
-            when (it) {
+        viewModel.onEach(MovieDetailState::effect, MovieDetailState::showProgress) { effect, progress ->
+            when (effect) {
                 Effect.Close -> closeDetail()
                 is Effect.ShowError -> showSnackBarMessage()
                 else -> Unit
             }
-        }
 
-        viewModel.onEach(MovieDetailState::showProgress) {
-            binding.progress.isVisible = it
+            binding.progress.isVisible = progress
         }
     }
 

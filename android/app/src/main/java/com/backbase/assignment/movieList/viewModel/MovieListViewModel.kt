@@ -17,32 +17,29 @@ class MovieListViewModel @AssistedInject constructor(
         @Assisted state: MovieListState,
         private val repository: MovieRepository) : MavericksViewModel<MovieListState>(state) {
     init {
+        onEach(MovieListState::effect) {
+            when (it) {
+                Effect.CheckAllMovies -> {
+                    fetchNowPlaying()
+                    fetchMostPopular()
+                }
+                Effect.LoadNextMostPopular -> fetchMostPopular()
+                else -> Unit
+            }
+        }
         fetchAllMovieTypes()
     }
 
     fun fetchAllMovieTypes() {
         setState { reduce(Event.FindAllMoviesRequested) }
-        checkState()
     }
 
     fun fetchNextPopularList() {
         setState { reduce(Event.LoadNextMostPopularRequestSent) }
-        checkState()
     }
 
     fun selectMovie(movie: Movie) {
         setState { reduce(Event.MovieDetailTapped(movie)) }
-    }
-
-    private fun checkState() = withState { s ->
-        when (s.effect) {
-            Effect.CheckAllMovies -> {
-                fetchNowPlaying()
-                fetchMostPopular()
-            }
-            Effect.LoadNextMostPopular -> fetchMostPopular()
-            else -> Unit
-        }
     }
 
     private fun fetchNowPlaying() {

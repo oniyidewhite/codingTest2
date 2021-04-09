@@ -28,17 +28,13 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list), MavericksView 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.onEach(MovieListState::effect) {
-            when (it) {
-                is Effect.MovieDetail -> showMovieDetails(it.movie)
+        viewModel.onEach(MovieListState::effect, MovieListState::showProgress) { effect, progress ->
+            when (effect) {
+                is Effect.MovieDetail -> showMovieDetails(effect.movie)
                 is Effect.ShowError -> showSnackBarMessage()
                 else -> Unit
             }
-        }
-
-        viewModel.onEach(MovieListState::showProgress) {
-            binding.progress.isVisible = it
+            binding.progress.isVisible = progress
         }
     }
 
